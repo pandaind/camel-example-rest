@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Configures the Camel Context -->
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+
+	<context:component-scan base-package="com.demo.restservicehandler" />
+	<jpa:repositories base-package="com.demo.restservicehandler.repositories" />
+
+	<camelContext xmlns="http://camel.apache.org/schema/spring">
+
+		<!-- Product Routes -->
+		<route id="getProducts">
+			<from uri="direct-vm:getProducts" />
+			<bean method="getProducts" ref="productServiceHandler" />
+		</route>
+		
+		<route id="getProduct">
+			<from uri="direct-vm:getProduct" />
+			<bean method="getProduct" ref="productServiceHandler" />
+		</route>
+
+		<route id="addProduct">
+			<from uri="direct-vm:addProduct" />
+			<bean method="addProduct" ref="productServiceHandler" />
+		</route>
+		
+		<route id="updateProduct">
+			<from uri="direct-vm:updateProduct" />
+			<bean method="addProduct" ref="productServiceHandler" />
+		</route>
+		
+		<route id="deleteProduct">
+			<from uri="direct-vm:deleteProduct" />
+			<bean method="deleteProduct" ref="productServiceHandler" />
+		</route>
+
+		<!-- Category Routes -->
+		<route id="getCategories">
+			<from uri="direct-vm:getCategories" />
+			<bean method="getCategories" ref="categoryServiceHandler" />
+		</route>
+		
+		<route id="getCategory">
+			<from uri="direct-vm:getCategory" />
+			<bean method="getCategory" ref="categoryServiceHandler" />
+		</route>
+
+		<route id="addCategory">
+			<from uri="direct-vm:addCategory" />
+			<bean method="addCategory" ref="categoryServiceHandler" />
+		</route>
+		
+		<route id="updateCategory">
+			<from uri="direct-vm:updateCategory" />
+			<bean method="addCategory" ref="categoryServiceHandler" />
+		</route>
+		
+		<route id="deleteCategory">
+			<from uri="direct-vm:deleteCategory" />
+			<bean method="deleteCategory" ref="categoryServiceHandler" />
+		</route>
+
+	</camelContext>
+
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${datasource.driver}" />
+		<property name="url" value="${datasource.url}" />
+		<property name="username" value="${datasource.username}" />
+		<property name="password" value="${datasource.password}" />
+	</bean>
+
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
+		</property>
+		<property name="jpaProperties">
+			<props>
+				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+				<prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>
+			</props>
+		</property>
+		<!-- Set base package of your entities -->
+		<property name="packagesToScan" value="com.demo.restservicehandler" />
+	</bean>
+
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+
+	<bean id="h2WebServer" class="org.h2.tools.Server" factory-method="createWebServer"
+		init-method="start" destroy-method="stop">
+		<constructor-arg value="-web,-webAllowOthers,-webPort,${h2.db.server.port}" />
+	</bean>
+
+	<bean id="productServiceHandler" class="com.demo.restservicehandler.ProductServiceHandler" />
+
+	<bean id="categoryServiceHandler" class="com.demo.restservicehandler.CategoryServiceHandler" />
+	
+	<!-- Properties File Loader -->
+	<bean id="bridgePropertyPlaceholder" class="org.apache.camel.spring.spi.BridgePropertyPlaceholderConfigurer">
+		<property name="location" value="classpath:rest-handler.properties" />
+	</bean>
+</beans>

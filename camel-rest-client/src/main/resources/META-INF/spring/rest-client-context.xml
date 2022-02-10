@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+	<camelContext xmlns="http://camel.apache.org/schema/spring">
+		<route id="restClient">
+			<from uri="timer://temp_timer?period={{request.time}}" />
+			<setHeader headerName="listOfRoutes">
+				<constant>direct:listProduct, direct:listCategory</constant>
+			</setHeader>
+			<recipientList stopOnException="true" delimiter=",">
+				<header>listOfRoutes</header>
+			</recipientList>
+		</route>
+		
+		<!-- list -->
+		<route id="listProduct">
+			<from uri="direct:listProduct" />
+			<setHeader headerName="CamelHttpMethod">
+				<constant>GET</constant>
+			</setHeader>
+			<to uri="http://localhost:{{rest.enpoint.port}}/{{rest.endpoint.name}}/product/list" />
+			<log message="Product List : ${body}" />
+		</route>
+		<route id="listCategory">
+			<from uri="direct:listCategory" />
+			<setHeader headerName="CamelHttpMethod">
+				<constant>GET</constant>
+			</setHeader>
+			<to uri="http://localhost:{{rest.enpoint.port}}/{{rest.endpoint.name}}/category/list" />
+			<log message="Category List : ${body}" />
+		</route>
+	</camelContext>
+	
+	<!-- Properties File Loader -->
+	<bean id="bridgePropertyPlaceholder" class="org.apache.camel.spring.spi.BridgePropertyPlaceholderConfigurer">
+		<property name="location" value="classpath:rest-client.properties" />
+	</bean>
+
+</beans>

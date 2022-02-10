@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Configures the Camel Context -->
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cxf="http://camel.apache.org/schema/cxf"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+	<!-- Rest server EndPoint -->
+	<cxf:rsServer id="restServer" address="http://localhost:[[rest.server.api.port]]/[[rest.server.api.url]]"
+		loggingFeatureEnabled="true">
+		<cxf:providers>
+			<bean class="org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider" />
+		</cxf:providers>
+	</cxf:rsServer>
+
+	<camelContext xmlns="http://camel.apache.org/schema/spring">
+		<!-- rest route -->
+		<route id="restServiceRoute">
+			<from uri="cxfrs:bean:restServer?resourceClasses=com.demo.restroute.service.ProductService,
+					com.demo.restroute.service.CategoryService&amp;bindingStyle=SimpleConsumer" />
+			<doTry>
+				<recipientList>
+					<simple>direct-vm:${header.operationName}</simple>
+				</recipientList>
+				<doCatch>
+					<exception>java.lang.Exception</exception>
+					<process ref="errorProcess"/>
+				</doCatch>
+			</doTry>
+		</route>
+	</camelContext>
+
+	<bean id="errorProcess" class="com.demo.restroute.service.error.ErrorProcessor" />
+	
+	<!-- Properties File Loader -->
+	<bean id="springPropertyPlaceholder" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="placeholderPrefix" value="[[" />
+		<property name="placeholderSuffix" value="]]" />
+		<property name="location" value="classpath:rest-server.properties" />
+	</bean>
+</beans>
