@@ -5,11 +5,11 @@ Restfull web service using Apache Camel, Apache CXF and Spring Data JPA
   - camel-rest-server   :   Rest server routes
   - camel-rest-client   :   A sample project to request Rest Server
 
-Change rest server binding port and api endpoint in file present in this location [camel-example-rest/camel-rest-server/src/main/resources/rest-server.properties](https://github.com/chittaranjanpanda/camel-example-rest/blob/master/camel-rest-server/src/main/resources/rest-server.properties)
+Change rest server binding port and api endpoint in file present in this location [camel-example-rest/camel-rest-server/src/main/resources/rest-server.properties](https://github.com/pandaind/camel-example-rest/blob/master/camel-rest-server/src/main/resources/rest-server.properties)
 
-Change rest client port, api endpoint and interval to request in file present in this location [camel-example-rest/camel-rest-client/src/main/resources/rest-client.properties](https://github.com/chittaranjanpanda/camel-example-rest/blob/master/camel-rest-client/src/main/resources/rest-client.properties)
+Change rest client port, api endpoint and interval to request in file present in this location [camel-example-rest/camel-rest-client/src/main/resources/rest-client.properties](https://github.com/pandaind/camel-example-rest/blob/master/camel-rest-client/src/main/resources/rest-client.properties)
 
-Change h2-database server port in file present in this location [camel-example-rest/camel-rest-handler/src/main/resources/rest-handler.properties](https://github.com/chittaranjanpanda/camel-example-rest/blob/master/camel-rest-handler/src/main/resources/rest-handler.properties)
+Change h2-database server port in file present in this location [camel-example-rest/camel-rest-handler/src/main/resources/rest-handler.properties](https://github.com/pandaind/camel-example-rest/blob/master/camel-rest-handler/src/main/resources/rest-handler.properties)
 
 Open terminal move to root folder i.e. camel-example-rest
 ```sh
